@@ -1,19 +1,46 @@
+# Import datetime
 from datetime import datetime
-import os
 
-def generate_log(data):
-    # TODO: Implement log generation logic
+# Import request to fetch data from API
+import requests
 
-    # STEP 1: Validate input
-    # Hint: Check if data is a list
+# generate_log function — creates a log file from a list of entries
+def generate_log(log_data):
+    # Validate input — raise ValueError if log_data is not a list
+    if not isinstance(log_data, list):
+        raise ValueError("log_data must be a list")
 
-    # STEP 2: Generate a filename with today's date (e.g., "log_20250408.txt")
-    # Hint: Use datetime.now().strftime("%Y%m%d")
+    # Create a file name using correct date
+    filename = f"log_{datetime.now().strftime('%Y%m%d')}.txt"
 
-    # STEP 3: Write the log entries to a file using File I/O
-    # Use a with open() block and write each line from the data list
-    # Example: file.write(f"{entry}\n")
+    # Open the file in write mode and place each entry log on its own line
+    with open(filename, "w") as file:
+        for entry in log_data:
+            file.write(f"{entry}\n")
 
-    # STEP 4: Print a confirmation message with the filename
+    # Print confirmation
+    print(f"Log written to {filename}")
 
-    pass
+    # Return filename so tests can verify it
+    return filename
+
+# Create a function to fetch data from API
+def fetch_data():
+    # Get request
+    response = requests.get("https://jsonplaceholder.typicode.com/posts/1")
+    # Check status of request
+    if response.status_code == 200:
+        # Return data in JSON
+        return response.json()
+    # Return empty if otherwise
+    return {}
+
+if __name__ == "__main__":
+    # Create log entries to write to the file
+    log_data = ["User logged in", "User updated profile", "Report exported"]
+    # Call generate_log with the list
+    generate_log(log_data)
+    # Call fetch_data and store the result
+    post = fetch_data()
+    # Print the title from the fetched post
+    print("Fetched Post Title:", post.get("title", "No title found"))
